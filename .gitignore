@@ -1,0 +1,29 @@
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+.gradle/
+build/
+
+# Local configuration files
+local.properties
+
+# IDE specific files
+.idea/
+.DS_Store
+*.iml
+.apt_generated
+.classpath
+.project
+.settings
