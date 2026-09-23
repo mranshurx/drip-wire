@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.VpnService
 import android.os.ParcelFileDescriptor
 import android.util.Log
+import com.example.vpnpanel.parser.PacketParser
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -32,8 +33,8 @@ class GameVpnService : VpnService() {
     private fun startVpn() {
         val builder = Builder()
             .setSession("FreeFireVpnPanel")
-            .addAddress("10.0.0.2", 24) // Local TUN interface IP
-            .addRoute("0.0.0.0", 0)   // Route all traffic through the tunnel
+            .addAddress("10.0.0.2", 24)
+            .addRoute("0.0.0.0", 0)
             .addDnsServer("8.8.8.8")
 
         try {
@@ -57,10 +58,13 @@ class GameVpnService : VpnService() {
                 while (isRunning) {
                     val length = inputStream.read(buffer.array())
                     if (length > 0) {
-                        // Raw IP packet captured in buffer.array() from index 0 to length
-                        // TODO: Parse IP/UDP headers and filter game traffic here
+                        // Parse and log UDP packet info
+                        val udpInfo = PacketParser.parseUdpPacket(buffer, length)
+                        if (udpInfo != null) {
+                            Log.d(TAG, "UDP Packet: ${udpInfo.sourceIp}:${udpInfo.sourcePort} -> ${udpInfo.destIp}:${udpInfo.destPort} (Len: ${udpInfo.payloadLength})")
+                        }
                         
-                        // Write packet back to maintain socket loop (dummy echo)
+                        // Echo packet back to maintain socket flow
                         outputStream.write(buffer.array(), 0, length)
                     }
                     buffer.clear()
